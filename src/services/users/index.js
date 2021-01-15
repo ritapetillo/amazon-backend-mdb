@@ -21,7 +21,7 @@ const parser = multer({ storage: storage });
 
 userRouter.get("/", async (req, res, next) => {
   try {
-    const users = await User.find();
+    const users = await User.find().populate("products");
     res.send(users);
   } catch (err) {
     const error = new Error("there is a probelm finding users");
@@ -85,10 +85,10 @@ userRouter.post("/:id/add-to-cart/:productId",async(req,res,next)=>{
         next(error)
     }
 })
-userRouter.get(":id/calculate-cart-total", async(req,res,next)=>{
+userRouter.get("/:id/calculate-cart-total", async(req,res,next)=>{
     try {
         const total = await User.calculateCartTotal(req.params.id)
-        res.send({total})
+        res.send(total)
     } catch (error) {
         next(error)
     }

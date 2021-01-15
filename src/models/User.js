@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema({
   cart: [
     {
       total: Number,
-      product: [{ type: Schema.Types.ObjectId, ref: "products" }],
+      product: { type: Schema.Types.ObjectId, ref: "products" },
       quantity: Number,
     },
   ],
@@ -47,6 +47,7 @@ UserSchema.static(
   }
 )
 UserSchema.static("addProductToCart", async function (id, product) {
+  console.log("qka o producti",product)
   await UserModel.findOneAndUpdate(
     { _id: id },
     {
@@ -57,11 +58,13 @@ UserSchema.static("addProductToCart", async function (id, product) {
 
 UserSchema.static("calculateCartTotal", async function (id) {
   
-  const { cart } = await UserModel.findById(id).populate("products")
+  const  cart  = await UserModel.findById(id).populate([{
+    path:"cart.product"
+}])
   console.log(cart,"123----321")
   return cart
-    .map(product => product.total * product.quantity)
-    .reduce((acc, el) => acc + el, 0)
+    // .map(product => product.total * product.quantity)
+    // .reduce((acc, el) => acc + el, 0)
 })
 const UserModel = model("users", UserSchema)
 
