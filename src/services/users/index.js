@@ -52,6 +52,19 @@ userRouter.post("/", validation(schemas.userSchema), async (req, res, next) => {
     next(error);
   }
 });
+//DELETE /user/:id
+//delete a user by id
+userRouter.delete("/:id", async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const user = await User.findByIdAndDelete(id);
+      res.send("user deleted");
+    } catch (err) {
+      const error = new Error("there is a problem finding user");
+      error.httpStatus = 404;
+      next(error);
+    }
+  });
 
 userRouter.post("/:id/add-to-cart/:productId",async(req,res,next)=>{
     try {
@@ -93,46 +106,34 @@ userRouter.get("/:id/calculate-cart-total", async (req, res, next) => {
 
 
 
-//DELETE /user/:id
-//delete a user by id
-userRouter.delete("/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const user = await User.findByIdAndDelete(id);
-    res.send("user deleted");
-  } catch (err) {
-    const error = new Error("there is a problem finding user");
-    error.httpStatus = 404;
-    next(error);
-  }
-});
-userRouter.post("/:id/add-to-cart/:productId", async (req, res, next) => {
-  try {
-    const productID = req.params.productId;
-    const product = await Product.findById(productID);
-    if (product) {
-      const newProduct = { ...product.toObject(), quantity: req.body.quantity };
-      console.log(newProduct);
-      const isProductThere = await User.findProductInCart(
-        req.params.id,
-        req.params.productId
-      );
-      if (isProductThere) {
-        await User.incrementCartQuantity(
-          req.params.id,
-          req.params.productId,
-          req.body.quantity
-        );
-        res.send("Quantinty incremendted");
-      } else {
-        await User.addProductToCart(req.params.id, newProduct);
-        res.send("New Product Added to cart");
-      }
-    }
-  } catch (error) {
-    next(error);
-  }
-});
+
+// userRouter.post("/:id/add-to-cart/:productId", async (req, res, next) => {
+//   try {
+//     const productID = req.params.productId;
+//     const product = await Product.findById(productID);
+//     if (product) {
+//       const newProduct = { ...product.toObject(), quantity: req.body.quantity };
+//       console.log(newProduct);
+//       const isProductThere = await User.findProductInCart(
+//         req.params.id,
+//         req.params.productId
+//       );
+//       if (isProductThere) {
+//         await User.incrementCartQuantity(
+//           req.params.id,
+//           req.params.productId,
+//           req.body.quantity
+//         );
+//         res.send("Quantinty incremendted");
+//       } else {
+//         await User.addProductToCart(req.params.id, newProduct);
+//         res.send("New Product Added to cart");
+//       }
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
 
 
