@@ -17,7 +17,7 @@ const parser = multer({ storage });
 //get all the products
 productRouter.get("/", async (req, res, next) => {
   try {
-    const products = Product.find();
+    const products = await Product.find();
     res.send(products);
   } catch (err) {
     console.log(err);

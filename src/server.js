@@ -8,6 +8,8 @@ const productRoutes = require("./services/products");
 server.use(express.json());
 server.use(cors());
 
+server.use("/products", productRoutes);
+
 server.use(error_handler({ log: true, debug: true }));
 
 const PORT = process.env.PORT || 3001;
