@@ -30,7 +30,9 @@ userRouter.get("/", async (req, res, next) => {
   }
 });
 
-userRouter.post("/", async (req, res, next) => {
+
+userRouter.post("/", validation(schemas.userSchema), async (req, res, next) => {
+
   try {
     //check if there is already a user with that email
     const user = await User.findOne({ email: req.body.email });
