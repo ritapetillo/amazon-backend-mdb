@@ -190,6 +190,33 @@ userRouter.delete("/:id", async (req, res, next) => {
     next(error);
   }
 });
+userRouter.post("/:id/add-to-cart/:productId", async (req, res, next) => {
+  try {
+    const productID = req.params.productId;
+    const product = await Product.findById(productID);
+    if (product) {
+      const newProduct = { ...product.toObject(), quantity: req.body.quantity };
+      console.log(newProduct);
+      const isProductThere = await User.findProductInCart(
+        req.params.id,
+        req.params.productId
+      );
+      if (isProductThere) {
+        await User.incrementCartQuantity(
+          req.params.id,
+          req.params.productId,
+          req.body.quantity
+        );
+        res.send("Quantinty incremendted");
+      } else {
+        await User.addProductToCart(req.params.id, newProduct);
+        res.send("New Product Added to cart");
+      }
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
 
 module.exports = userRouter;
