@@ -13,7 +13,12 @@ const ReviewSchema = new Schema (
             max: 5,
             default: 1,
           },
-    }
+          createdAt: {
+            type: Date,
+            default: Date.now(),
+          },
+    },
+  
 )
 
 module.exports = model("Review",ReviewSchema)

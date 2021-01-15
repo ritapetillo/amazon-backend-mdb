@@ -9,10 +9,13 @@ const reviewsRouter = require("./services/reviews")
 
 
 
+
+
 server.use(express.json());
 server.use(cors());
 
 server.use("/reviews",reviewsRouter)
+
 
 
 server.use(error_handler({ log: true, debug: true }));
