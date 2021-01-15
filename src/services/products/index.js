@@ -29,8 +29,14 @@ productRouter.get("/", async (req, res, next) => {
   }
 });
 
+
+
+// GET /listings/:id
+//get a plae by id
+
 // GET /products/:id
 //get a product by id
+
 
 productRouter.get("/:id", async (req, res, next) => {
   try {
@@ -79,6 +85,7 @@ productRouter.put(
   async (req, res, next) => {
     try {
       const { id } = req.params;
+
       const updatedProduct = {
         ...req.body,
         updatedAt: Date.now(),
@@ -87,6 +94,7 @@ productRouter.put(
       const existingProduct = await Product.findByIdAndUpdate(
         id,
         { $set: { ...updatedProduct } },
+
         {
           runValidators: true,
           new: true,
@@ -96,12 +104,16 @@ productRouter.put(
       res.send(existingProduct);
     } catch (err) {
       console.log(err);
+
       const error = new Error("It was not possible to edit the product");
+
       error.code = 404;
       next(error);
     }
   }
 );
+
+
 
 //DELETE /product/:id
 //delete a product by id
@@ -147,5 +159,6 @@ productRouter.post(
     }
   }
 );
+
 
 module.exports = productRouter;

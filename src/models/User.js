@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema({
   cart:  [
       {
         
-        price: Number,
+        total: Number,
         products: [
           { _id: Schema.Types.ObjectId},
         ],
@@ -63,7 +63,7 @@ UserSchema.static("addBookToCart", async function (id, product) {
 UserSchema.static("calculateCartTotal", async function (id) {
   const { cart } = await UserModel.findById(id)
   return cart
-    .map(product => product.price * product.quantity)
+    .map(product => product.total * product.quantity)
     .reduce((acc, el) => acc + el, 0)
 })
 const UserModel = model("users", UserSchema)

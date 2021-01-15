@@ -1,5 +1,6 @@
 const express = require("express");
 const User = require("../../models/User");
+const Product = require("../../models/Product")
 const validation = require("../../lib/validationMiddleware");
 const schemas = require("../../lib/validationSchema");
 const userRouter = express.Router();
@@ -51,5 +52,36 @@ userRouter.post("/", validation(schemas.userSchema), async (req, res, next) => {
     next(error);
   }
 });
+
+userRouter.post("/:id/add-to-cart/:productId",async(req,res,next)=>{
+    try {
+        const productID = req.params.productId
+        const product = await Product.findById(productID)
+        if(product){
+            const newProduct = {...product.toObject(),quantity:req.body.quantity}
+
+            const isProductThere = await User.findProductInCart(
+                req.params.id,
+                req.params.productId
+            )
+            if(isProductThere){
+                await User.incrementCartQuantity(
+                    req.params.id,
+                    req.params.productId,
+                    req.body.quantity
+                )
+                res.send("New Product Added :D")
+            }
+        }else{
+            const err = new Error()
+            err.httpStatusCode = 404
+            next(err)
+        }
+        
+    } catch (error) {
+        next(error)
+    }
+})
+
 
 module.exports = userRouter;
