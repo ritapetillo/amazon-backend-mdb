@@ -13,7 +13,9 @@ const UserSchema = new mongoose.Schema({
     {
       total: Number,
       product: { type: Schema.Types.ObjectId, ref: "products" },
-      quantity: Number,
+
+      quantity: {type:Number,default:1},
+
     },
   ],
   createdAt: Date,
@@ -26,15 +28,14 @@ const UserSchema = new mongoose.Schema({
 //   next();
 // });
 
-UserSchema.static("findProductInCart", async function (id, productId) {
-  const isProduct = await UserModel.findOne(
-    {
-      _id: id,
-      "cart._id": productId,
-    },
-    { $inc: { "cart.$.quantity": quantity } }
-  );
-});
+
+UserSchema.static("findProductInCart", async function (id , productId) {
+  const isProduct = await UserModel.findOne({
+    _id:id,
+    "cart.product":productId,
+  })
+  return isProduct
+})
 
 
 UserSchema.static(
@@ -43,7 +44,7 @@ UserSchema.static(
     await UserModel.findOneAndUpdate(
       {
         _id: id,
-        "cart._id": productId,
+        "cart.product": productId,
       },
       { $inc: { "cart.$.quantity": quantity } }
 
@@ -51,21 +52,29 @@ UserSchema.static(
   }
 )
 
-UserSchema.static("addBookToCart", async function (id, product) {
+UserSchema.static("addProductToCart", async function (id, product) {
+  console.log("qka o producti",product)
+
   await UserModel.findOneAndUpdate(
     { _id: id },
     {
-      $addToSet: { cart: product },
+      $addToSet: { cart: {product:product} },
     }
 
   )
 })
 
 UserSchema.static("calculateCartTotal", async function (id) {
-  const { cart } = await UserModel.findById(id)
+  
+
+const{ cart}  = await UserModel.findById(id).populate([{
+  path:"cart.product"
+}])
+  console.log(cart[0].quantity,"123----321")
+  
   return cart
-    .map(product => product.total * product.quantity)
-    .reduce((acc, el) => acc + el, 0)
+   .map(product => product.quantity * product.product.price)
+   .reduce((acc, el) => acc + el, 0)
 })
 const UserModel = model("users", UserSchema)
 module.exports = UserModel

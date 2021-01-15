@@ -25,7 +25,9 @@ const parser = multer({ storage: storage });
 
 userRouter.get("/", async (req, res, next) => {
   try {
+
     const users = await User.find().select({ password: 0 });
+
     res.send(users);
   } catch (err) {
     const error = new Error("there is a probelm finding users");
@@ -188,5 +190,6 @@ userRouter.delete("/:id", async (req, res, next) => {
     next(error);
   }
 });
+
 
 module.exports = userRouter;
