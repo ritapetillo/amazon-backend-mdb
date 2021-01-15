@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema({
   cart: [
     {
       total: Number,
-      product: [{ type: Schema.Types.ObjectId, ref: "products" }],
+      productId: [{ type: Schema.Types.ObjectId, ref: "products" }],
       quantity: Number,
     },
   ],
@@ -29,7 +29,7 @@ const UserSchema = new mongoose.Schema({
 UserSchema.static("findProductInCart", async function (id , productId) {
   const isProduct = await UserModel.findOne({
     _id:id,
-    "cart._id":productId,
+    "cart.productId":productId,
   })
   return isProduct
 })
@@ -40,17 +40,20 @@ UserSchema.static(
     await UserModel.findOneAndUpdate(
       {
         _id: id,
-        "cart._id": productId,
+        "cart.productId": productId,
       },
       { $inc: { "cart.$.quantity": quantity } }
     )
   }
 )
-UserSchema.static("addProductToCart", async function (id, product) {
+UserSchema.static("addProductToCart", async function (id, productId) {
+    const productToAdd = {
+        productId
+    }
   await UserModel.findOneAndUpdate(
     { _id: id },
     {
-      $addToSet: { cart: product },
+      $addToSet: { cart: productToAdd },
     }
   )
 })
