@@ -4,11 +4,15 @@ const server = express();
 const mongoose = require("mongoose");
 const error_handler = require("node-error-handler");
 
+const reviewsRouter = require("./services/reviews")
+
 
 
 
 server.use(express.json());
 server.use(cors());
+
+server.use("/reviews",reviewsRouter)
 
 
 server.use(error_handler({ log: true, debug: true }));
