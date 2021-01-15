@@ -29,6 +29,7 @@ productRouter.get("/", async (req, res, next) => {
   }
 });
 
+
 // GET /listings/:id
 //get a plae by id
 
@@ -46,7 +47,60 @@ productRouter.get("/:id", async (req, res, next) => {
 });
 
 // POST /products
-//create new product
-// productRouter.post('/',validation(validSchemas.productSchema),parser.single('image'))
+// create new product
+productRouter.post(
+  "/",
+  validation(validSchemas.productSchema),
+  async (req, res, next) => {
+    try {
+      //verify if there is any other product with the same sku
+      const existingProduct = await Product.findOne({ sku: req.body.sku });
+      if (existingProduct)
+        return next(new Error("There is already a product with the same SKU"));
+
+      const newProduct = new Product({
+        ...req.body,
+      });
+      const product = await newProduct.save();
+      res.send(product);
+    } catch (err) {
+      console.log(err);
+      const error = new Error("It was not possible to create a new product");
+      error.code = 404;
+      next(error);
+    }
+  }
+);
+
+// PUT /products/:id
+// edit an existing product
+productRouter.put(
+  "/",
+  validation(validSchemas.productSchema),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      //verify if there is any other product with the same sku
+      const existingProduct = Product.findByIdAndUpdate(
+        id,
+        {
+          $set: { ...req.body },
+        },
+        {
+          runValidators: true,
+          new: true,
+        }
+      );
+      if (!existingProduct) return next(new Error("Product not found"));
+      res.send(existingProduct);
+    } catch (err) {
+      console.log(err);
+      const error = new Error("It was not possible to create a new product");
+      error.code = 404;
+      next(error);
+    }
+  }
+);
+
 
 module.exports = productRouter;
