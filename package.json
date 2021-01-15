@@ -17,6 +17,7 @@
     "multer-storage-cloudinary": "^4.0.0",
     "node-error-handler": "^1.1.14",
     "node-geocoder": "^3.27.0",
+    "query-to-mongo": "^0.10.1",
     "s-haversine": "^2.0.0"
   },
   "devDependencies": {
