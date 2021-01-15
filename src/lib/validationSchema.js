@@ -1,7 +1,6 @@
 const Joi = require('joi')
 const schemas = {
-<<<<<<< Updated upstream
-=======
+
   productSchema: Joi.object().keys({
     name: Joi.string().required(),
     description: Joi.string().required(),
@@ -19,17 +18,8 @@ const schemas = {
     password: Joi.string().min(6).required(),
   }),
 };
->>>>>>> Stashed changes
 
-    productSchema = Joi.object().keys({
-        name: Joi.string().required(),
-        description: Joi.string().required(),
-        brand: Joi.string().required(),
-        imageUrl: Joi.string(),
-        price: Joi.number().required(),
-        category: Joi.string().required(),
-    })
+   
 
-}
 
 module.exports = schemas

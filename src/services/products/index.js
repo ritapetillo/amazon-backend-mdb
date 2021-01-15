@@ -27,8 +27,7 @@ productRouter.get("/", async (req, res, next) => {
   }
 });
 
-<<<<<<< Updated upstream
-=======
+
 // GET /listings/:id
 //get a plae by id
 
@@ -101,5 +100,5 @@ productRouter.put(
   }
 );
 
->>>>>>> Stashed changes
+
 module.exports = productRouter;
