@@ -51,16 +51,14 @@ UserSchema.static("addProductToCart", async function (id, product) {
   await UserModel.findOneAndUpdate(
     { _id: id },
     {
-      $addToSet: { cart: {product:productId} },
+      $addToSet: { cart: {product:product} },
     }
   )
 })
 
 UserSchema.static("calculateCartTotal", async function (id) {
   
-//   const cart  = await UserModel.findById(id).populate([{
-//     path:"cart.product"
-// }])
+
 const cart  = await UserModel.findById(id).populate("products")
   console.log(cart,"123----321")
   return cart
