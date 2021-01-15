@@ -2,18 +2,20 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const {model} = require("mongoose")
 const bcrypt = require("bcryptjs");
-const { userSchema } = require("../lib/validationSchema");
 
 const UserSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
   email: String,
   password: String,
+
   cart: [
     {
       total: Number,
       product: { type: Schema.Types.ObjectId, ref: "products" },
+
       quantity: {type:Number,default:1},
+
     },
   ],
   createdAt: Date,
@@ -26,6 +28,7 @@ const UserSchema = new mongoose.Schema({
 //   next();
 // });
 
+
 UserSchema.static("findProductInCart", async function (id , productId) {
   const isProduct = await UserModel.findOne({
     _id:id,
@@ -33,6 +36,7 @@ UserSchema.static("findProductInCart", async function (id , productId) {
   })
   return isProduct
 })
+
 
 UserSchema.static(
   "incrementCartQuantity",
@@ -43,16 +47,20 @@ UserSchema.static(
         "cart.product": productId,
       },
       { $inc: { "cart.$.quantity": quantity } }
+
     )
   }
 )
+
 UserSchema.static("addProductToCart", async function (id, product) {
   console.log("qka o producti",product)
+
   await UserModel.findOneAndUpdate(
     { _id: id },
     {
       $addToSet: { cart: {product:product} },
     }
+
   )
 })
 
@@ -69,5 +77,5 @@ const{ cart}  = await UserModel.findById(id).populate([{
    .reduce((acc, el) => acc + el, 0)
 })
 const UserModel = model("users", UserSchema)
-
 module.exports = UserModel
+

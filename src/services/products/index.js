@@ -2,6 +2,7 @@ const express = require("express");
 const productRouter = express.Router();
 const mongoose = require("mongoose")
 const Product = require("../../models/Product");
+var q2m = require("query-to-mongo");
 const validation = require("../../lib/validationMiddleware");
 const validSchemas = require("../../lib/validationSchema");
 const multer = require("multer");
@@ -20,7 +21,12 @@ const parser = multer({ storage });
 //get all the products
 productRouter.get("/", async (req, res, next) => {
   try {
-    const products = await Product.find();
+    const query = q2m(req.query);
+    console.log(query);
+    const products = await Product.find(query.criteria)
+      .sort(query.options.sort)
+      .skip(query.options.skip)
+      .limit(query.options.limit);
     res.send(products);
   } catch (err) {
     console.log(err);
@@ -30,14 +36,11 @@ productRouter.get("/", async (req, res, next) => {
   }
 });
 
-
-
 // GET /listings/:id
 //get a plae by id
 
 // GET /products/:id
 //get a product by id
-
 
 productRouter.get("/:id", async (req, res, next) => {
   try {
@@ -114,8 +117,6 @@ productRouter.put(
   }
 );
 
-
-
 //DELETE /product/:id
 //delete a product by id
 
@@ -160,6 +161,7 @@ productRouter.post(
     }
   }
 );
+
 
 
 // ============================== REVIEWS CRUD -================================================
@@ -268,5 +270,6 @@ productRouter.delete("/:id/reviews/:reviewsID", async(req,res,next)=>{
         next(error)
     }
 })
+
 
 module.exports = productRouter;
