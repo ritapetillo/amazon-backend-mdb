@@ -29,9 +29,8 @@ productRouter.get("/", async (req, res, next) => {
   }
 });
 
-
-// GET /listings/:id
-//get a plae by id
+// GET /products/:id
+//get a product by id
 
 productRouter.get("/:id", async (req, res, next) => {
   try {
@@ -75,17 +74,19 @@ productRouter.post(
 // PUT /products/:id
 // edit an existing product
 productRouter.put(
-  "/",
+  "/:id",
   validation(validSchemas.productSchema),
   async (req, res, next) => {
     try {
       const { id } = req.params;
+      const updatedProduct = {
+        ...req.body,
+        updatedAt: Date.now(),
+      };
       //verify if there is any other product with the same sku
-      const existingProduct = Product.findByIdAndUpdate(
+      const existingProduct = await Product.findByIdAndUpdate(
         id,
-        {
-          $set: { ...req.body },
-        },
+        { $set: { ...updatedProduct } },
         {
           runValidators: true,
           new: true,
@@ -95,12 +96,56 @@ productRouter.put(
       res.send(existingProduct);
     } catch (err) {
       console.log(err);
-      const error = new Error("It was not possible to create a new product");
+      const error = new Error("It was not possible to edit the product");
       error.code = 404;
       next(error);
     }
   }
 );
 
+//DELETE /product/:id
+//delete a product by id
+
+productRouter.delete("/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findByIdAndDelete(id);
+    res.send(`${product._id} has been deleted`);
+  } catch (err) {
+    console.log(err);
+    const error = new Error("Products not found");
+    error.code = 404;
+    next(error);
+  }
+});
+
+//POST /product/:id/image
+//upload product image
+productRouter.post(
+  "/:id/image",
+  parser.single("image"),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const imageUrl = req.file && req.file.path; // add the single
+      //verify if there is any other product with the same sku
+      const existingProduct = await Product.findByIdAndUpdate(
+        id,
+        { $set: { imageUrl } },
+        {
+          runValidators: true,
+          new: true,
+        }
+      );
+      if (!existingProduct) return next(new Error("Product not found"));
+      res.send(existingProduct);
+    } catch (err) {
+      console.log(err);
+      const error = new Error("It was not possible to edit the product");
+      error.code = 404;
+      next(error);
+    }
+  }
+);
 
 module.exports = productRouter;
