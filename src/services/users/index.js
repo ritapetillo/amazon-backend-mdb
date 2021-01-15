@@ -58,8 +58,8 @@ userRouter.post("/:id/add-to-cart/:productId",async(req,res,next)=>{
         const productID = req.params.productId
         const product = await Product.findById(productID)
         if(product){
-            const newProduct = {...product.toObject(),quantity:req.body.quantity}
-            console.log(newProduct)
+            // const newProduct = {...product.toObject(),quantity:req.body.quantity}
+            // console.log(newProduct)
             const isProductThere = await User.findProductInCart(
                 req.params.id,
                 req.params.productId
@@ -72,7 +72,10 @@ userRouter.post("/:id/add-to-cart/:productId",async(req,res,next)=>{
                 )
                 res.send("Quantinty incremendted")
             }else{
-                await User.addProductToCart(req.params.id,newProduct)
+                await User.addProductToCart(
+                  req.params.id,
+                  req.params.productId
+                );
                 res.send("New Product Added to cart")
         }
         }else{
