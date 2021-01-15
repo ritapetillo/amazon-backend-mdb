@@ -9,16 +9,13 @@ const UserSchema = new mongoose.Schema({
   lastName: String,
   email: String,
   password: String,
-  cart:  [
-      {
-        
-        total: Number,
-        products: [
-          { _id: Schema.Types.ObjectId},
-        ],
-        quantity: Number,
-      },
-    ],
+  cart: [
+    {
+      total: Number,
+      product: [{ type: Schema.Types.ObjectId, ref: "products" }],
+      quantity: Number,
+    },
+  ],
   createdAt: Date,
   updatedAt: Date,
 });
@@ -30,13 +27,11 @@ const UserSchema = new mongoose.Schema({
 // });
 
 UserSchema.static("findProductInCart", async function (id , productId) {
-  const isProduct = await UserModel.findOne(
-    {
+  const isProduct = await UserModel.findOne({
     _id:id,
     "cart._id":productId,
-  },
-  {$inc:{"cart.$.quantity":quantity}}
-  )
+  })
+  return isProduct
 })
 
 UserSchema.static(
@@ -51,7 +46,7 @@ UserSchema.static(
     )
   }
 )
-UserSchema.static("addBookToCart", async function (id, product) {
+UserSchema.static("addProductToCart", async function (id, product) {
   await UserModel.findOneAndUpdate(
     { _id: id },
     {
@@ -61,7 +56,9 @@ UserSchema.static("addBookToCart", async function (id, product) {
 })
 
 UserSchema.static("calculateCartTotal", async function (id) {
-  const { cart } = await UserModel.findById(id)
+  
+  const { cart } = await UserModel.findById(id).populate("products")
+  console.log(cart,"123----321")
   return cart
     .map(product => product.total * product.quantity)
     .reduce((acc, el) => acc + el, 0)

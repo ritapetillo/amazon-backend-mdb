@@ -59,7 +59,7 @@ userRouter.post("/:id/add-to-cart/:productId",async(req,res,next)=>{
         const product = await Product.findById(productID)
         if(product){
             const newProduct = {...product.toObject(),quantity:req.body.quantity}
-
+            console.log(newProduct)
             const isProductThere = await User.findProductInCart(
                 req.params.id,
                 req.params.productId
@@ -70,18 +70,28 @@ userRouter.post("/:id/add-to-cart/:productId",async(req,res,next)=>{
                     req.params.productId,
                     req.body.quantity
                 )
-                res.send("New Product Added :D")
-            }
+                res.send("Quantinty incremendted")
+            }else{
+                await User.addProductToCart(req.params.id,newProduct)
+                res.send("New Product Added to cart")
+        }
         }else{
-            const err = new Error()
-            err.httpStatusCode = 404
-            next(err)
+            const error = new Error()
+            error.httpStatusCode = 404
+            next(error)
         }
         
     } catch (error) {
         next(error)
     }
 })
-
+userRouter.get(":id/calculate-cart-total", async(req,res,next)=>{
+    try {
+        const total = await User.calculateCartTotal(req.params.id)
+        res.send({total})
+    } catch (error) {
+        next(error)
+    }
+})
 
 module.exports = userRouter;
