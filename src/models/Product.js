@@ -14,12 +14,13 @@ const ProductSchema = new schema({
     type: String,
     required: true,
   },
+  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "reviews" }],
   imageUrl: String,
   price: Number,
   category: String,
-    sku: {
-        type: String,
-        unique:true
+  sku: {
+    type: String,
+    unique: true,
   },
   qt: Number,
   createdAt: {
