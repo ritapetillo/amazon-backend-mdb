@@ -1,7 +1,7 @@
-const {Schema } require("mongoose")
+const {Schema ,model}= require("mongoose")
 const mongoose = require("mongoose")
 
-const ReviewsSchema = new Schema (
+const ReviewSchema = new Schema (
     {
         comment:{
             type:String,
@@ -16,4 +16,4 @@ const ReviewsSchema = new Schema (
     }
 )
 
-module.exports = model("Review",ReviewsSchema)
+module.exports = model("Review",ReviewSchema)
