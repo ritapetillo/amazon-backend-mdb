@@ -17,6 +17,11 @@ const ProductSchema = new schema({
   imageUrl: String,
   price: Number,
   category: String,
+    sku: {
+        type: String,
+        unique:true
+  },
+  qt: Number,
   createdAt: {
     type: Date,
     default: Date.now(),
